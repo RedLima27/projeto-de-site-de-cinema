@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CineDragon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="go('home')" role="button" tabindex="0">CINEDRAGON</div>
+  <div class="nav-tabs">
+    <button class="ntab on" onclick="go('home')">Em Cartaz</button>
+    <button class="ntab" onclick="go('soon')">Em Breve</button>
+    <button class="ntab" onclick="go('buy')">Ingressos</button>
+    <button class="ntab" onclick="go('snacks')">Bomboniere</button>
+  </div>
+  <button class="nav-back" onclick="goBack()">Voltar</button>
+  <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleThemeMode()" title="Alternar modo claro/escuro">☀️</button>
+  <div class="promo-dot">
+    <div class="dot" id="nav-dot"></div>
+    <span class="nav-time" id="nav-time">--:--</span>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="pg-home" class="pg on">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-tag">✦ Bem-vindo ao CineDragon</div>
+    <h1>A MELHOR<br><em>EXPERIÊNCIA</em><br>DO CINEMA</h1>
+    <p class="hero-p">Filmes incríveis, bomboniere premium e seus códigos digitais na hora.</p>
+    <div class="promo-banner">
+      <div class="pb-icon">🎟️</div>
+      <div>
+        <div class="pb-main">PROMOÇÃO DO MEIO-DIA</div>
+        <div class="pb-sub">Todos os ingressos por R$ 12,00 · 12h às 17h</div>
+      </div>
+      <div class="pb-badge off" id="promo-badge">—</div>
+    </div>
+    <div class="hero-clock" id="hero-clock"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-hd"><div class="sec-title">🎬 Em Cartaz</div><span class="sec-badge" id="film-count"></span></div>
+    <div class="sec-sub">Toque no filme para ver detalhes e comprar</div>
+    <div class="film-grid" id="film-grid"></div>
+  </div>
+</div>
+
+<!-- SOON -->
+<div id="pg-soon" class="pg">
+  <div class="sec">
+    <div class="sec-hd"><div class="sec-title">🔭 Em Breve</div></div>
+    <div class="sec-sub">Próximas estreias confirmadas nos cinemas</div>
+    <div class="soon-list" id="soon-list"></div>
+  </div>
+</div>
+
+<!-- SOON DETAIL -->
+<div id="pg-soon-detail" class="pg">
+  <div class="sec">
+    <div class="sec-hd" style="justify-content:space-between;align-items:center">
+      <div class="sec-title" id="sd-title">🔍 Detalhes</div>
+      <button class="back-btn" onclick="goBack()">← Voltar</button>
+    </div>
+    <div class="sec-sub" id="sd-sub">Clique em um filme para ver mais detalhes.</div>
+    <div class="soon-detail-card">
+      <div class="soon-detail-img">
+        <img id="sd-img" src="" alt="" loading="lazy">
+        <div class="sd-fallback" id="sd-fallback" style="display:none">🎬</div>
+      </div>
+      <div class="soon-detail-info">
+        <div class="sd-meta" id="sd-meta"></div>
+        <p class="sd-desc" id="sd-desc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BUY -->
+<div id="pg-buy" class="pg">
+  <div class="sec">
+    <div class="sec-hd"><div class="sec-title">🎟️ Comprar Ingresso</div></div>
+    <div class="sec-sub">CPF obrigatório para verificação de idade</div>
+    <div class="buy-wrap">
+      <div class="buy-left">
+        <div class="card">
+          <div class="card-title"><span class="step-n">1</span>Filme e sessão</div>
+          <div class="fg"><label>Filme</label>
+            <select class="fselect" id="b-film" onchange="onFilmChange()">
+              <option value="">Selecione um filme...</option>
+            </select>
+          </div>
+          <div class="frow">
+            <div class="fg"><label>Horário</label>
+              <select class="fselect" id="b-session">
+                <option value="">Horário...</option>
+                <option>14:00 — Sala 1</option><option>15:30 — Sala 2</option>
+                <option>16:30 — Sala 3</option><option>18:00 — Sala 1</option>
+                <option>20:30 — Sala 2</option><option>22:00 — Sala 3</option>
+              </select>
+            </div>
+            <div class="fg"><label>Categoria da Sala</label>
+              <select class="fselect" id="b-category" onchange="refreshEstimate()">
+                <option value="comum">Comum</option>
+                <option value="vip">VIP (+R$10)</option>
+                <option value="imax">IMAX (+R$18)</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Poltronas selecionadas</label>
+            <div class="seat-picker">
+              <button class="btn-sec" type="button" onclick="goToSeats()">🪑 Selecionar poltronas</button>
+              <div class="seat-choice" id="b-seat-display">Nenhuma selecionada</div>
+              <input type="hidden" id="b-seat" value="">
+            </div>
+          </div>
+          <div id="ra-box" style="display:none" class="fg">
+            <label>RA — Registro Acadêmico</label>
+            <input class="finput" id="b-ra" type="text" placeholder="Ex: 12345678" oninput="refreshEstimate()">
+            <div style="font-size:11px;color:var(--muted);margin-top:.25rem">Obrigatório para ingressos meia-estudante</div>
+          </div>
+          <div id="seat-types-box" style="display:none">
+            <label style="margin-bottom:.5rem">Tipo de entrada por poltrona</label>
+            <div id="seat-types-list" class="seat-types-list"></div>
+            <div class="seat-summary-box" id="seat-summary-box"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="step-n">2</span>Seus dados</div>
+          <div class="fg"><label>Nome completo</label><input class="finput" id="b-name" type="text" placeholder="Seu nome completo" autocomplete="name"></div>
+          <div class="fg"><label>CPF (verificação de idade)</label><input class="finput" id="b-cpf" type="text" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" oninput="maskCPF(this);refreshEstimate()"></div>
+          <div class="fg"><label>Email</label><input class="finput" id="b-email" type="email" inputmode="email" placeholder="seu@email.com" autocomplete="email"></div>
+
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="step-n">3</span>Pagamento</div>
+          <div class="price-preview" id="price-preview" style="display:none">
+            <span class="pp-label">Valor estimado</span>
+            <span class="pp-val" id="price-est">—</span>
+          </div>
+          <button class="btn-main" onclick="openPay('ticket')">Ir para pagamento →</button>
+          <div class="al" id="buy-al"><div class="al-t" id="buy-al-t"></div><div id="buy-al-m"></div></div>
+        </div>
+      </div>
+      <div class="buy-right">
+        <div class="card">
+          <div class="card-title">🎫 Seu Ingresso</div>
+          <div id="tkt-ph" style="text-align:center;padding:2rem 0;color:var(--muted);font-size:12px">Preencha os dados e<br>finalize o pagamento.</div>
+          <div class="tkt-wrap" id="tkt-wrap">
+            <div class="tkt">
+              <div class="tkt-head">
+                <div class="tkt-cinema-nm">CINEDRAGON</div>
+                <div style="font-size:10px;color:var(--muted)">São Paulo, SP · 2026</div>
+              </div>
+              <div class="tkt-body">
+                <div class="tkt-row">
+                  <div><div class="tkt-f">Filme</div><div class="tkt-v" id="t-film">—</div></div>
+                  <div><div class="tkt-f">Sessão</div><div class="tkt-v" id="t-sess">—</div></div>
+                </div>
+                <div class="tkt-row">
+                  <div><div class="tkt-f">Poltrona</div><div class="tkt-v" id="t-seat">—</div></div>
+                  <div><div class="tkt-f">Tipo</div><div class="tkt-v" id="t-type">—</div></div>
+                </div>
+                <div class="tkt-row">
+                  <div><div class="tkt-f">Comprador</div><div class="tkt-v" id="t-name">—</div></div>
+                  <div><div class="tkt-f">Total</div><div class="tkt-price" id="t-price">—</div><div class="paid-tag" id="t-paid" style="display:none">✓ PAGO</div></div>
+                </div>
+                <div class="tkt-div"></div>
+                <div class="code-box cb-t"><div class="cb-label">🎬 Código do Ingresso</div><div class="cb-code" id="t-code">—</div><div class="cb-hint">Apresente na entrada da sala</div></div>
+                <div class="code-box cb-f" id="t-food-box" style="display:none"><div class="cb-label">🍿 Código da Bomboniere</div><div class="cb-code" id="t-food-code">—</div><div class="cb-hint">Resgate no caixa</div></div>
+                <div class="tkt-footer">Emitido em <span id="t-time">—</span></div>
+              </div>
+            </div>
+            <button class="btn-sec" style="margin-top:.625rem" onclick="window.print()">🖨️ Imprimir ingresso</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SNACKS -->
+<div id="pg-snacks" class="pg">
+  <div class="sec">
+    <div class="sec-hd"><div class="sec-title">🍿 Bomboniere</div></div>
+    <div class="sec-sub">Peça online · Retire com código no caixa · Sem fila!</div>
+    <div class="snack-layout">
+      <div class="snack-left">
+        <div class="snack-grid" id="snack-grid"></div>
+      </div>
+      <div class="snack-right">
+        <div class="cart-card">
+          <div class="cart-hd"><span>🛒 Pedido</span><span id="cart-count" style="font-size:11px;color:var(--muted)"></span></div>
+          <div class="cart-empty-txt" id="cart-empty">Nenhum item ainda</div>
+          <div id="cart-items" style="display:none"></div>
+          <div class="ctotal" id="cart-total" style="display:none"><span>Total</span><span id="cart-total-v" style="color:var(--gold)">R$ 0,00</span></div>
+          <div style="margin-top:.875rem">
+            <div class="fg"><label>Nome para retirada</label><input class="finput" id="sk-name" placeholder="Seu nome" autocomplete="name"></div>
+            <div class="fg"><label>CPF</label><input class="finput" id="sk-cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" oninput="maskCPF(this)"></div>
+            <button class="btn-main" onclick="openPay('snack')">Finalizar e pagar →</button>
+            <div class="al" id="sk-al"><div class="al-t" id="sk-al-t"></div><div id="sk-al-m"></div></div>
+          </div>
+          <div class="tkt-wrap" id="sk-tkt-wrap">
+            <div class="tkt" style="margin-top:.875rem">
+              <div class="tkt-head">
+                <div class="tkt-cinema-nm">CINEDRAGON</div>
+                <div style="font-size:10px;color:var(--muted)">Bomboniere</div>
+              </div>
+              <div class="tkt-body">
+                <div id="sk-order-list" style="margin-bottom:.625rem;font-size:12px"></div>
+                <div class="tkt-div"></div>
+                <div class="code-box cb-f"><div class="cb-label">🍿 Código de Retirada</div><div class="cb-code" id="sk-code">—</div><div class="cb-hint">Apresente no caixa</div></div>
+                <div style="display:flex;justify-content:space-between;margin-top:.625rem"><span style="font-size:11px;color:var(--muted)">Pedido para</span><span style="font-size:12px;font-weight:600" id="sk-for">—</span></div>
+                <div class="paid-tag" style="margin-top:.5rem;width:100%;justify-content:center">✓ PAGAMENTO CONFIRMADO</div>
+              </div>
+            </div>
+            <button class="btn-sec" style="margin-top:.625rem" onclick="window.print()">🖨️ Imprimir pedido</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEATS PAGE -->
+<div id="pg-seats" class="pg">
+  <div class="sec" style="max-width:1100px">
+    <div class="sec-hd" style="justify-content:space-between;align-items:center">
+      <div>
+        <div class="sec-title">🪑 Selecione as poltronas</div>
+        <div class="sec-sub">Clique para selecionar · Até 12 poltronas · Fileira H é preferencial</div>
+      </div>
+      <button class="back-btn" onclick="confirmSeatsAndReturn()">✓ Confirmar e voltar</button>
+    </div>
+    <div class="seats-page-layout">
+      <div class="seats-map-wrap">
+        <div class="seat-screen">TELA</div>
+        <div class="seats-full-grid" id="seats-full-grid"></div>
+        <div style="text-align:center;font-size:11px;color:var(--muted2);margin-top:1rem;letter-spacing:.15em">FUNDO DA SALA</div>
+      </div>
+      <aside class="seats-summary-panel">
+        <div class="seats-legend">
+          <div class="sl-item"><span class="sl-dot avail"></span>Disponível</div>
+          <div class="sl-item"><span class="sl-dot sel"></span>Selecionada</div>
+          <div class="sl-item"><span class="sl-dot occ"></span>Ocupada</div>
+          <div class="sl-item"><span class="sl-dot pref"></span>Preferencial</div>
+        </div>
+        <div class="seats-info-box">
+          <div class="sib-row"><span>Selecionadas</span><strong id="sp-count">0</strong></div>
+          <div class="sib-row"><span>Poltronas</span><strong id="sp-codes">—</strong></div>
+          <div class="sib-row"><span>Categoria</span><strong id="sp-category">—</strong></div>
+          <div class="sib-row" id="sp-price-row" style="display:none"><span>Total est.</span><strong id="sp-price" style="color:var(--gold)">—</strong></div>
+        </div>
+        <button class="btn-main" style="margin-top:auto" onclick="confirmSeatsAndReturn()">✓ Confirmar poltronas</button>
+        <button class="btn-sec" style="margin-top:.5rem" onclick="go('buy')">Cancelar</button>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- AGE VERIFICATION POPUP -->
+<div class="modal-ov" id="age-modal" onclick="closeAgeModal(event)">
+  <div class="modal age-modal-box" onclick="event.stopPropagation()">
+    <div class="m-handle"></div>
+    <div class="age-modal-icon" id="age-modal-icon">🔞</div>
+    <div class="m-title" id="age-modal-title">Verificação de Idade</div>
+    <div class="m-desc" id="age-modal-desc">Este filme possui classificação indicativa.</div>
+    <div class="age-form">
+      <div class="fg"><label>CPF</label><input class="finput" id="age-cpf" type="text" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" oninput="maskCPF(this)"></div>
+      <div class="fg"><label>Data de nascimento</label><input class="finput" id="age-dob" type="date" onchange="ageCheckLive()"></div>
+      <div class="age-result" id="age-result"></div>
+    </div>
+    <div class="m-actions">
+      <button class="mbtn mbtn-p" id="age-confirm-btn" onclick="confirmAge()" disabled>Confirmar</button>
+      <button class="mbtn mbtn-s" onclick="_doCloseAgeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILM MODAL -->
+<div class="modal-ov" id="film-modal" onclick="closeFModal(event)">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-header">
+      <div class="m-poster"><img id="fm-img" src="" alt="" onerror="this.style.display='none';document.getElementById('fm-fb').style.display='flex'"><div class="m-poster-fb" id="fm-fb" style="display:none"></div></div>
+      <div style="flex:1;min-width:0"><div class="m-title" id="fm-title">—</div><div class="m-meta" id="fm-meta">—</div></div>
+    </div>
+    <div class="m-desc" id="fm-desc">—</div>
+    <div class="m-cast" id="fm-cast"></div>
+    <div class="m-actions">
+      <button class="mbtn mbtn-p" id="fm-buy-btn">Comprar ingresso</button>
+      <button class="mbtn mbtn-s" onclick="closeFModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="seat-modal" onclick="closeSeatModal(event)">
+  <div class="modal seat-modal-box" onclick="event.stopPropagation()">
+    <div class="m-handle"></div>
+    <div class="m-header" style="justify-content:space-between;align-items:flex-start;gap:1rem;">
+      <div style="flex:1;min-width:0">
+        <div class="m-title">Selecione as poltronas</div>
+        <div class="m-meta">Clique para selecionar. Até 12 poltronas por compra. Fileira H é preferencial.</div>
+        <div class="seat-selected-count" id="seat-selected-count">0 poltronas selecionadas</div>
+      </div>
+      <button class="mbtn mbtn-s" onclick="closeSeatModal()">Fechar</button>
+    </div>
+    <div class="seat-area">
+        <div class="seat-screen">TELA</div>
+        <div class="seat-map-grid" id="seat-map-grid"></div>
+      </div>
+      <div class="seat-footer">Fileira H é preferencial (destacada em laranja). Clique na poltrona desejada para selecioná-la.</div>
+    <button class="btn-main" style="margin-top:1rem" onclick="confirmSeatChoice()">Confirmar poltrona</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="pay-modal" id="pay-modal">
+  <div class="pay-box">
+    <div class="m-handle"></div>
+    <div class="pay-title">💳 Pagamento</div>
+    <div class="pay-sub" id="pay-sub">Escolha como pagar</div>
+    <div class="pay-total-row"><div class="pay-total-l">Total</div><div class="pay-total-v" id="pay-total-v">R$ 0,00</div></div>
+    <div class="pay-methods">
+      <div class="pm" id="pm-pix" onclick="selPM('pix')"><div class="pm-icon">⚡</div><div class="pm-label">PIX</div></div>
+      <div class="pm" id="pm-credit" onclick="selPM('credit')"><div class="pm-icon">💳</div><div class="pm-label">Crédito</div></div>
+      <div class="pm" id="pm-debit" onclick="selPM('debit')"><div class="pm-icon">🏦</div><div class="pm-label">Débito</div></div>
+    </div>
+    <div class="qr-zone" id="qr-zone">
+      <div class="qr-img" id="qr-wrap"></div>
+      <div class="qr-key"><strong>Chave PIX CineDragon</strong>pagamentos@cinedragon.com.br</div>
+      <div class="qr-hint">Escaneie o QR code ou copie a chave PIX.<br>O código é gerado após a confirmação.</div>
+    </div>
+    <div class="card-zone" id="card-zone">
+      <div class="fg"><label>Número do cartão</label><input class="finput" id="cc-num" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" oninput="maskCard(this)"></div>
+      <div class="frow">
+        <div class="fg"><label>Validade</label><input class="finput" id="cc-exp" placeholder="MM/AA" maxlength="5" oninput="maskExp(this)"></div>
+        <div class="fg"><label>CVV</label><input class="finput" id="cc-cvv" placeholder="000" maxlength="3" inputmode="numeric"></div>
+      </div>
+      <div class="fg"><label>Nome no cartão</label><input class="finput" id="cc-nm" placeholder="NOME SOBRENOME"></div>
+    </div>
+    <button class="pay-confirm" onclick="confirmPay()">Confirmar Pagamento</button>
+    <button class="pay-cancel" onclick="closePay()">Cancelar</button>
+  </div>
+</div>
+
+<script src="security/security.js"></script>
+<script src="assets/js/script.js"></script>
+</body>
+</html>

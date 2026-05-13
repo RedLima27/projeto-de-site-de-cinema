@@ -1,0 +1,187 @@
+{
+  "security": {
+    "name": "CINE_DRAGON Security Configuration",
+    "version": "1.0.0",
+    "date": "2026-04-25",
+    "status": "production",
+    "description": "Configurações de segurança para a aplicação CineDragon"
+  },
+  "protection": {
+    "xss": {
+      "enabled": true,
+      "description": "Proteção contra Cross-Site Scripting",
+      "methods": ["sanitizeInput", "sanitizeOutput"]
+    },
+    "csrf": {
+      "enabled": true,
+      "description": "Proteção contra Cross-Site Request Forgery",
+      "tokenExpiry": 3600000,
+      "storage": "sessionStorage"
+    },
+    "rateLimit": {
+      "enabled": true,
+      "description": "Proteção contra brute force e DDoS",
+      "requests": {
+        "limit": 3,
+        "window": 60000,
+        "action": "block"
+      }
+    },
+    "sessionManagement": {
+      "enabled": true,
+      "description": "Gerenciamento de sessão com timeout",
+      "timeout": 1800000,
+      "warning": 1500000,
+      "autoReset": true
+    },
+    "dataProtection": {
+      "enabled": true,
+      "description": "Proteção e mascaramento de dados sensíveis",
+      "encryption": "base64",
+      "note": "Use criptografia real (AES, RSA) em produção",
+      "masking": {
+        "cpf": "XXX.XXX.XXX-**",
+        "email": "us*****@domain.com",
+        "phone": "(XX) XXXX-****"
+      }
+    }
+  },
+  "payment": {
+    "methods": [
+      {
+        "id": "credit",
+        "name": "Cartão de Crédito",
+        "enabled": true,
+        "fees": 0,
+        "installments": [1, 2, 3, 6, 12],
+        "validation": "Luhn Algorithm",
+        "ssl": "required"
+      },
+      {
+        "id": "debit",
+        "name": "Cartão de Débito",
+        "enabled": true,
+        "fees": -5,
+        "validation": "Luhn Algorithm",
+        "ssl": "required"
+      },
+      {
+        "id": "pix",
+        "name": "Pix",
+        "enabled": true,
+        "fees": 0,
+        "processing": "instant",
+        "ssl": "required"
+      },
+      {
+        "id": "boleto",
+        "name": "Boleto",
+        "enabled": true,
+        "fees": 0,
+        "expiry": 259200000,
+        "ssl": "required"
+      },
+      {
+        "id": "paypal",
+        "name": "PayPal",
+        "enabled": true,
+        "fees": 0,
+        "ssl": "required"
+      },
+      {
+        "id": "wallet",
+        "name": "Apple Pay / Google Pay",
+        "enabled": true,
+        "fees": 0,
+        "ssl": "required"
+      }
+    ],
+    "ssl": {
+      "enabled": true,
+      "minVersion": "TLSv1.2",
+      "cipher": "AES-256-GCM"
+    },
+    "pciCompliance": {
+      "required": true,
+      "version": "3.2.1",
+      "description": "Conformidade com PCI DSS obrigatória"
+    }
+  },
+  "headers": {
+    "securityHeaders": [
+      {
+        "name": "Content-Security-Policy",
+        "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "description": "Política de Segurança de Conteúdo"
+      },
+      {
+        "name": "X-Content-Type-Options",
+        "value": "nosniff",
+        "description": "Previne MIME sniffing"
+      },
+      {
+        "name": "X-Frame-Options",
+        "value": "DENY",
+        "description": "Previne Clickjacking"
+      },
+      {
+        "name": "X-XSS-Protection",
+        "value": "1; mode=block",
+        "description": "Proteção XSS do navegador"
+      },
+      {
+        "name": "Strict-Transport-Security",
+        "value": "max-age=31536000; includeSubDomains",
+        "description": "Force HTTPS"
+      },
+      {
+        "name": "Referrer-Policy",
+        "value": "strict-origin-when-cross-origin",
+        "description": "Controla informações de referência"
+      }
+    ]
+  },
+  "logging": {
+    "enabled": true,
+    "events": [
+      "security_module_initialized",
+      "console_injection_attempt",
+      "storage_abuse_attempt",
+      "failed_login",
+      "invalid_cpf",
+      "suspicious_activity"
+    ],
+    "maxEvents": 100,
+    "export": "JSON",
+    "retention": 604800000
+  },
+  "recommendations": {
+    "production": [
+      "✅ Use HTTPS obrigatoriamente em todas as requisições",
+      "✅ Implemente CORS adequadamente",
+      "✅ Use JWT tokens com expiração",
+      "✅ Hash SHA-256 para todas as senhas",
+      "✅ Valide dados no backend, nunca confie no frontend",
+      "✅ Implemente WAF (Web Application Firewall)",
+      "✅ Rate limiting no servidor",
+      "✅ Conformidade OWASP Top 10",
+      "✅ Auditoria de segurança regular",
+      "✅ Pentesting semestral"
+    ],
+    "important": [
+      "⚠️ Base64 NÃO é criptografia - use algoritmos reais",
+      "⚠️ O frontend pode ser contornado - sempre valide no backend",
+      "⚠️ Nunca expor dados sensíveis em localStorage",
+      "⚠️ Usar HTTPS 100% - nunca HTTP para pagamentos",
+      "⚠️ Manter dependências atualizadas",
+      "⚠️ Implementar Backup diário"
+    ]
+  },
+  "testing": {
+    "unitTests": "required",
+    "integrationTests": "required",
+    "securityTests": "required",
+    "penetrationTesting": "recommended",
+    "loadTesting": "recommended"
+  }
+}
