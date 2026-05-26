@@ -1,10 +1,10 @@
-﻿# 🐉 CineDragon
+﻿# CineDragon
 
 Sistema completo de cinema com compra de ingressos, bomboniere e verificação de idade por CPF — front-end em HTML/CSS/JS puro e back-end em Node.js com banco de dados MySQL.
 
 ---
 
-## 📸 Funcionalidades
+## Funcionalidades
 
 - **Em Cartaz** — grade de filmes com poster, gênero, duração e classificação etária
 - **Em Breve** — próximas estreias com countdown de dias e badges de classificação
@@ -20,7 +20,7 @@ Sistema completo de cinema com compra de ingressos, bomboniere e verificação d
 
 ---
 
-## 🗂️ Estrutura do projeto
+## Estrutura do projeto
 
 ```
 cinedragon/
@@ -42,7 +42,7 @@ cinedragon/
 
 ---
 
-## 🚀 Como rodar localmente
+## Como rodar localmente
 
 ### Pré-requisitos
 
@@ -144,13 +144,13 @@ O arquivo `schema.sql` cria automaticamente todas as tabelas e popula com dados 
 
 ---
 
-## 🔒 Segurança e LGPD
+## Segurança e LGPD
 
 CPFs nunca são gravados em texto puro. O servidor aplica **SHA-256** antes de qualquer inserção no banco, tornando impossível recuperar o CPF original. A verificação de idade é registrada com CPF hasheado, data de nascimento e resultado (aprovado/bloqueado).
 
 ---
 
-## 🌐 Publicar na internet (opcional)
+## Publicar na internet (opcional)
 
 Para deixar o site acessível publicamente sem custo:
 
@@ -173,7 +173,7 @@ Para deixar o site acessível publicamente sem custo:
 
 ---
 
-## 🛠️ Tecnologias
+##Tecnologias
 
 | Camada | Tecnologia |
 |--------|-----------|
